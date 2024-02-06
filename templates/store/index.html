@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% load cart %}
+{% load custom_filter %}
+
+<!-- Body -->
+<br>
+
+<center>
+    <h1>Home Page</h1>
+</center>
+
+<hr><br>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Filter -->
+        <div class="col-lg-3 mx-auto mb-3">
+            <div class="list-group">
+                <a href="/" class="list-group-item list-group-item-action">All products</a>
+
+                {% for category in categories %}
+
+                <a href="?category={{ category.pk }}" class="list-group-item list-group-item-action">
+                    {{ category.name.title }}
+                </a>
+
+                {% endfor %}
+                
+            </div>
+        </div>
+
+        <!-- All products -->
+        <div id="products" class="col-lg-9 mx-auto">
+            <div class="row mx-auto">
+                {% for product in products %}
+
+                <div class="card mx-auto mb-3" id="{{ product.pk }}" style="width: 18rem;">
+                    <img src="{{ product.image.url }}" class="card-img-top" alt="Oops... Image not found!!!">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ product.name }}</h5>
+                        <p class="card-text">{{ product.price|currency }}</p>
+                    </div>
+
+                    <div class="card-footer p-0">
+                        {% if product|isCart:request.session.cart %}
+
+                        <div class="row">
+                            <form action="#{{ product.pk }}" method="POST" class="col-2">
+                                <input type="text" name="product_value" value="{{ product.pk }}" hidden>
+                                <input type="text" name="remove" value="True" hidden>
+                                <input type="submit" value=" - " class="btn btn-block btn-light">
+                            </form>
+
+                            <div class="text-center col">
+                                {{ product|cartQuantity:request.session.cart }} in cart
+                            </div>
+
+                            <form action="#{{ product.pk }}" method="POST" class="col-2">
+                                <input type="text" name="product_value" value="{{ product.pk }}" hidden>
+                                <input type="submit" value=" + " class="btn btn-block btn-light">
+                            </form>
+                        </div>
+
+                        {% else %}
+
+                        <form action="#{{ product.pk }}" method="POST" class="btn-block">
+                            <input type="text" name="product_value" value="{{ product.pk }}" hidden>
+                            <input type="submit" class="btn btn-light border form-control" value="Add to cart">
+                        </form>
+
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
